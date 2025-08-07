@@ -74,24 +74,25 @@ def get_overlap(file1_keys, file2_keys):
 
 
 def calculate_overlap_product(file1_keys, file2_keys):
-    # This function is really slow because of the .count() method being run inside the loop
-    # For each overlapping key, .count() is called on both lists, which scans the whole list every time
-    
-    # Get the set of all overlapping keys
-    overlap_array = get_overlap(file1_keys, file2_keys)
+    # By using the Counter method from the collections module, we don't have to iterate over the key arrays for each item in the array and get the count of each
 
-    # Initialise overlap_product to 0
+    # Counter creates a dictionary object where the keys are unique elements, and values are the counts (how many times they show up)
+    # We now have something to lookup the number of occurrences for each key, which is MUCH faster
+    file1_dict = Counter(file1_keys)
+    file2_dict = Counter(file2_keys)
+
+    # They don't need to be created into sets, since the Counter method creates a dictionary with only unique keys
+    # We can then create an object based on the intersection of the overlapping keys:
+    overlapping_keys = file1_dict.keys() & file2_dict.keys()
+
+    # Initialise overlap_product to 0...
     overlap_product = 0
 
-    # for each key in the set:
-    for key in overlap_array:
-        # Calculate the count of that key in file1_keys and file2_keys
-        file1_count = file1_keys.count(key)
-        file2_count = file2_keys.count(key)
+    # For every key in the overlap:
+    for key in overlapping_keys:
+        # Increment the overlap_product by the amount of times the key shows up in each array:
+        overlap_product += file1_dict[key] * file2_dict[key]
 
-        # Increment overlap_product by the product of each
-        overlap_product += file1_count * file2_count
-    
     return overlap_product
 
 
