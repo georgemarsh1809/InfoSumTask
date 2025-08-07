@@ -19,7 +19,7 @@ def open_files(file1, file2):
         for line in csv1:
             key = line[0]  # In the event that a csv is uploaded that has more than 1 column, only the first column will be read
             if key != "": # Removes all empty keys, since they don't need to be compared
-                file_one_keys.append(key) # Adding keys to an array for easier iteration in other 
+                file_one_keys.append(key) # Adding keys to an array for easier iteration in other functions
 
     with open(file2, "r") as f:
         csv2 = csv.reader(f)
