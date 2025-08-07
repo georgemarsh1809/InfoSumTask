@@ -7,6 +7,7 @@
 #   The product of the overlap (the count of each overlapping key in each file, multiplied together, then totalled)
 
 import csv
+from collections import Counter
 
 file1, file2 = './Data/A_f.csv', './Data/B_f.csv'
 
@@ -54,7 +55,7 @@ def distinct_key_count(file1_keys, file2_keys):
     return file1_distinct_key_count, file2_distinct_key_count
 
 
-def count_overlap(file1_keys, file2_keys):
+def get_overlap(file1_keys, file2_keys):
     # First, get the set (an array of unique keys) for each file:
     file1_set, file2_set = set(file1_keys), set(file2_keys)
 
@@ -73,8 +74,11 @@ def count_overlap(file1_keys, file2_keys):
 
 
 def calculate_overlap_product(file1_keys, file2_keys):
+    # This function is really slow because of the .count() method being run inside the loop
+    # For each overlapping key, .count() is called on both lists, which scans the whole list every time
+    
     # Get the set of all overlapping keys
-    overlap_array = count_overlap(file1_keys, file2_keys)
+    overlap_array = get_overlap(file1_keys, file2_keys)
 
     # Initialise overlap_product to 0
     overlap_product = 0
@@ -109,7 +113,7 @@ def execute():
 
     # Calculate the count of the distinct overlap
     print ("Key Overlap Count: ")
-    print(f'{len(count_overlap(file1_keys, file2_keys)):,}', "\n")
+    print(f'{len(get_overlap(file1_keys, file2_keys)):,}', "\n")
 
     # Calculate the overlap product
     print("Overlap Product: ")
