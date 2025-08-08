@@ -16,7 +16,8 @@ def open_files(file1, file2):
     file_two_keys = []      
 
     with open(file1, "r") as f:
-        csv1 = csv.reader(f)
+        # I used the csv library so I had access to more csv specific functions, which will allow for easier scaling if new fields are introduced
+        csv1 = csv.reader(f) 
         for line in csv1:
             key = line[0]  # In the event that a csv is uploaded that has more than 1 column, only the first column will be read
             if key != "": # Removes all empty keys, since they don't need to be compared
@@ -68,9 +69,9 @@ def get_overlap(file1_keys, file2_keys):
             # ...if the key is in both sets, add it to the overlap_array:
             overlap_array.append(key)
 
-    # Returning the array for use in calculate_overlap_product()
-    # The actual overlap_count can be returned by getting the len() of overlap_array
-    return overlap_array
+    overlap_count = len(overlap_array)
+
+    return overlap_count
 
 
 def calculate_overlap_product(file1_keys, file2_keys):
@@ -82,7 +83,7 @@ def calculate_overlap_product(file1_keys, file2_keys):
     file2_dict = Counter(file2_keys)
 
     # They don't need to be created into sets, since the Counter method creates a dictionary with only unique keys
-    # We can then create an object based on the intersection of the overlapping keys:
+    # We can then create an object of the intersection of the overlapping keys:
     overlapping_keys = file1_dict.keys() & file2_dict.keys()
 
     # Initialise overlap_product to 0...
@@ -96,8 +97,7 @@ def calculate_overlap_product(file1_keys, file2_keys):
     return overlap_product
 
 
-
-def execute():
+def execute_and_profile():
     # Load keys into arrays
     file1_keys, file2_keys = open_files(file1=file1, file2=file2)
 
@@ -114,14 +114,14 @@ def execute():
 
     # Calculate the count of the distinct overlap
     print ("Key Overlap Count: ")
-    print(f'{len(get_overlap(file1_keys, file2_keys)):,}', "\n")
+    print(f'{get_overlap(file1_keys, file2_keys):,}', "\n")
 
     # Calculate the overlap product
     print("Overlap Product: ")
     overlap_product = calculate_overlap_product(file1_keys, file2_keys)
     print(f'{overlap_product:,}')
 
-execute()
+execute_and_profile()
 
     
 
