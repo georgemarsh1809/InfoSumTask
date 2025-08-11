@@ -37,7 +37,7 @@ React.
     If not, run: `pip3 install fastapi pytest httpx==0.24.1 `
 2. Navigate to the backend folder: \
    `cd backend`
-3. Run: ` pytest key_tests.py 
+3. Run: `pytest key_tests.py `
 
 
 ### Implementation Notes
