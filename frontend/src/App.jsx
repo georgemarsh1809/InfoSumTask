@@ -37,8 +37,6 @@ function App() {
             setError(
                 'The files appear to be the same. Please upload two different CSVs.'
             );
-            setFile1(null);
-            setFile2(null);
             return;
         }
 

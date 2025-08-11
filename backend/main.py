@@ -28,8 +28,8 @@ async def process_csvs(file1: UploadFile = File(...),
                        delimiter: str = ','):
     
     # Read file contents 
-    file1_raw = (await file1.read()).decode("windows-1252")
-    file2_raw = (await file2.read()).decode("windows-1252")
+    file1_raw = (await file1.read()).decode("utf-8")
+    file2_raw = (await file2.read()).decode("utf-8")
 
      # Parse CSVs
     file1_contents = csv.reader(io.StringIO(file1_raw), delimiter=delimiter)
@@ -43,8 +43,7 @@ async def process_csvs(file1: UploadFile = File(...),
     file1_keys = []
     file2_keys = []
 
-    # Iterate over each file and, if the key is valid, add it to the respective array | catch any invalid keys
-
+    # Iterate over each file and, if the key is valid, add it to the respective array, if the column given by the user is out of range, raise a HTTP exception
     for row in file1_contents:
         try:
             key = row[file1KeyColumn - 1].strip()

@@ -115,7 +115,7 @@ def calculate_overlap_product(file1_keys, file2_keys):
 
     # For every key in the overlap:
     for key in overlapping_keys:
-        # Increment the overlap_product by the amount of times the key shows up in each array:
+        # Increment the overlap_product by the amount of times the key shows up in each arra, multipled together:
         overlap_product += file1_dict[key] * file2_dict[key]
 
     return overlap_product
@@ -138,7 +138,7 @@ def execute_and_profile():
 
     # Calculate the count of the distinct overlap
     print ("Key Overlap Count: ")
-    print(f'{get_overlap(file1_keys, file2_keys):,}', "\n")
+    print(f'{get_overlap_count(file1_keys, file2_keys):,}', "\n")
 
     # Calculate the overlap product
     print("Overlap Product: ")
