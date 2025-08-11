@@ -2,7 +2,7 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
 import csv
 import io
 from fastapi.middleware.cors import CORSMiddleware
-from services import is_valid_udprn, key_count, distinct_key_count, get_overlap, calculate_overlap_product
+from services import is_valid_udprn, key_count, distinct_key_count, get_overlap_count, calculate_overlap_product
 
 # Create API server
 app = FastAPI() 
@@ -44,11 +44,10 @@ async def process_csvs(file1: UploadFile = File(...),
     file2_keys = []
 
     # Iterate over each file and, if the key is valid, add it to the respective array | catch any invalid keys
-    invalid_keys = []
 
     for row in file1_contents:
         try:
-            key = row[file1KeyColumn - 1]
+            key = row[file1KeyColumn - 1].strip()
         except IndexError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -58,12 +57,10 @@ async def process_csvs(file1: UploadFile = File(...),
         # Validate the key format
         if is_valid_udprn(key):
             file1_keys.append(key)
-        else:
-            invalid_keys.append((key, row))
 
     for row in file2_contents:
         try:
-            key = row[file2KeyColumn - 1]
+            key = row[file2KeyColumn - 1].strip()
         except IndexError:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
@@ -72,19 +69,11 @@ async def process_csvs(file1: UploadFile = File(...),
         
         if is_valid_udprn(key):
             file2_keys.append(key)
-        else:
-            invalid_keys.append((key, row))
-    
-    if invalid_keys:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Invalid UDPRN keys found in one of the files"
-        )
 
     # Parse to the backend services to process the keys and return the required information
     file1_key_count, file2_key_count = key_count(file1_keys, file2_keys)
     file1_distinct_key_count, file2_distinct_key_count = distinct_key_count(file1_keys, file2_keys)
-    overlap_count = get_overlap(file1_keys, file2_keys)
+    overlap_count = get_overlap_count(file1_keys, file2_keys)
     overlap_product = calculate_overlap_product(file1_keys, file2_keys)
 
     return {

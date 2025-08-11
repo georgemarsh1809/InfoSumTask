@@ -59,7 +59,7 @@ def distinct_key_count(file1_keys, file2_keys):
     return file1_distinct_key_count, file2_distinct_key_count
 
 
-def get_overlap(file1_keys, file2_keys):
+def get_overlap_count(file1_keys, file2_keys):
     # First, get the set (an array of unique keys) for each file:
     file1_set, file2_set = set(file1_keys), set(file2_keys)
 
@@ -145,7 +145,8 @@ def execute_and_profile():
     overlap_product = calculate_overlap_product(file1_keys, file2_keys)
     print(f'{overlap_product:,}')
 
-execute_and_profile()
+if __name__ == "__main__":
+    execute_and_profile()
 
     
 

@@ -43,6 +43,7 @@ function App() {
         }
 
         setError('');
+
         const formData = new FormData();
         formData.append('file1', file1);
         formData.append('file2', file2);
@@ -64,13 +65,13 @@ function App() {
             setResponse(data);
         } catch (error) {
             console.error('Error uploading CSVs:', error);
-            alert('Error uploading CSVs'); // Show error message to user
+            alert('Error uploading CSVs');
         }
     };
 
     return (
         <div className="container">
-            <h2>Upload Two CSV Files</h2>
+            <h2>UDPRN Intersection</h2>
             <div>
                 <form className="file-input" onSubmit={handleSubmit}>
                     *Choose a CSV:
