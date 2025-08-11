@@ -1,5 +1,4 @@
 # Import 2 CSV files
-
 # Calculate:   
 #   The count of keys in each file
 #   The count of distinct keys in each file
@@ -7,6 +6,7 @@
 #   The product of the overlap (the count of each overlapping key in each file, multiplied together, then totalled)
 
 import csv
+import re
 from collections import Counter
 
 file1, file2 = './Data/A_f.csv', './Data/B_f.csv'
@@ -32,6 +32,9 @@ def open_files(file1, file2):
 
     return file_one_keys, file_two_keys
 
+def is_valid_udprn(key: str) -> bool:
+    """Return True if key is exactly 8 digits."""
+    return bool(re.fullmatch(r"\d{8}", key))
 
 def key_count(file1_keys, file2_keys):
     file1_key_count = len(file1_keys)
@@ -41,7 +44,7 @@ def key_count(file1_keys, file2_keys):
 
 
 def distinct_key_count(file1_keys, file2_keys):
-    # The set function takes an iterable (such as an array\list) and returns a set of distinct elements 
+    # The set function takes an iterable (such as an array\list) and returns a Set of distinct elements 
     # By using a Set, only distinct elements are added and counted
 
     # Something to consider is that every time the set is created, the order isn't guaranteed to be the same. 
@@ -75,6 +78,27 @@ def get_overlap(file1_keys, file2_keys):
 
 
 def calculate_overlap_product(file1_keys, file2_keys):
+    # Old Solution:
+    # This function is really slow because of the .count() method being run inside the loop
+    # For each overlapping key, .count() is called on both lists, which scans the whole list every time
+    """
+        overlap_array = get_overlap(file1_keys, file2_keys) # returns an array
+
+        # Initialise overlap_product to 0
+        overlap_product = 0
+
+        # for each key in the overlap_array:
+        for key in overlap_array:
+            # Calculate the count of that key in file1_keys and file2_keys
+            file1_count = file1_keys.count(key)
+            file2_count = file2_keys.count(key)
+
+            # Increment overlap_product by the product of each
+            overlap_product += file1_count * file2_count
+        
+        return overlap_product
+        
+    """
     # By using the Counter method from the collections module, we don't have to iterate over the key arrays for each item in the array and get the count of each
 
     # Counter creates a dictionary object where the keys are unique elements, and values are the counts (how many times they show up)

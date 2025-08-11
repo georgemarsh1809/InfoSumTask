@@ -1,8 +1,8 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException, status
 import csv
 import io
 from fastapi.middleware.cors import CORSMiddleware
-from services import key_count, distinct_key_count, get_overlap, calculate_overlap_product
+from services import is_valid_udprn, key_count, distinct_key_count, get_overlap, calculate_overlap_product
 
 # Create API server
 app = FastAPI() 
@@ -21,14 +21,19 @@ async def root():
     return {"message": "Hello World"}
 
 @app.post("/process-csvs/")
-async def process_csvs(file1: UploadFile = File(...), file2: UploadFile = File(...)):
+async def process_csvs(file1: UploadFile = File(...), 
+                       file2: UploadFile = File(...), 
+                       file1KeyColumn: int = Form(...), 
+                       file2KeyColumn: int = Form(...), 
+                       delimiter: str = ','):
+    
     # Read file contents 
-    file1_raw = (await file1.read()).decode("utf-8")
-    file2_raw = (await file2.read()).decode("utf-8")
+    file1_raw = (await file1.read()).decode("windows-1252")
+    file2_raw = (await file2.read()).decode("windows-1252")
 
-    # Parse CSVs using csv.reader
-    file1_contents = csv.reader(io.StringIO(file1_raw))
-    file2_contents = csv.reader(io.StringIO(file2_raw))
+     # Parse CSVs
+    file1_contents = csv.reader(io.StringIO(file1_raw), delimiter=delimiter)
+    file2_contents = csv.reader(io.StringIO(file2_raw), delimiter=delimiter)
 
     # Skip over CSV field header:
     next(file1_contents, None)
@@ -38,14 +43,43 @@ async def process_csvs(file1: UploadFile = File(...), file2: UploadFile = File(.
     file1_keys = []
     file2_keys = []
 
-    # Iterate over each file and, if its the key is not empty, add it to the respective array 
+    # Iterate over each file and, if the key is valid, add it to the respective array | catch any invalid keys
+    invalid_keys = []
+
     for row in file1_contents:
-        if row[0] != "":
-            file1_keys.append(row[0])
+        try:
+            key = row[file1KeyColumn - 1]
+        except IndexError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Column index {file1KeyColumn} out of range for file1 row: {row}"
+            )
+        
+        # Validate the key format
+        if is_valid_udprn(key):
+            file1_keys.append(key)
+        else:
+            invalid_keys.append((key, row))
 
     for row in file2_contents:
-        if row[0] != "":
-            file2_keys.append(row[0])
+        try:
+            key = row[file2KeyColumn - 1]
+        except IndexError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Column index {file2KeyColumn} out of range for file2 row: {row}"
+            )
+        
+        if is_valid_udprn(key):
+            file2_keys.append(key)
+        else:
+            invalid_keys.append((key, row))
+    
+    if invalid_keys:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid UDPRN keys found in one of the files"
+        )
 
     # Parse to the backend services to process the keys and return the required information
     file1_key_count, file2_key_count = key_count(file1_keys, file2_keys)
