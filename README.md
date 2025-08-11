@@ -74,5 +74,9 @@ React.
 - I then wrote a Python function for each metric defined in the requirements. This didn't take too long, and I got every function generating the required result pretty quickly, but I noticed the function to generate the overlap product was very slow.
 I researched some faster ways to loop over intersections and discovered the Counter method in the `collections` module. The explanation for why this is so much faster can be found in the code comments.
 - Once I was happy with the logic I wanted to implement a better way to specify the CSV files and demo the features,  so I created a simple REST API with FastAPI, and split the logic out into a `services` file. I then created a simple React UI which hits the API I built, triggering the backend services and performing the logic on the provided CSVs.
+- As a way to validate the above requirements were met, I also used Pytest to create some simple Unit Tests for each function. With this, I assert that only valid keys are processed, and by using basic sample data, that each function returns the expected metric.
+
+#### 💭 Assumptions:
+-  Keys that are missing ("", in the CSVs), are to be ignored and not counted in the final calculations.
 
 
