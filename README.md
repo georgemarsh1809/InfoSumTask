@@ -1,4 +1,4 @@
-This is a prototype of a full-stack URL Shortener application, using FastAPI and
+This is a simple CSV comparison web app, using FastAPI and
 React.
 
 ### 🔧 Setup:
